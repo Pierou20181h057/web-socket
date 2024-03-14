@@ -15,33 +15,9 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", socket =>{
-
-    socketsOnline.push(socket.id);
-    // emision basica
-    socket.emit("welcome", "Ahora estas conectado.");
-    socket.on("server", data =>{
-        console.log(data);
+    socket.on("circle position", position =>{
+        socket.broadcast.emit("move circle", position);
     })
-    io.emit("everyone", socket.id + " se ha conectado");
-    //emision a uno solo
-    socket.on("last", message => {
-        const lastSocket = socketsOnline[ socketsOnline.length -1];
-        //casi igual solo cambia el ultimo a caa rato
-        //const lastSocket = socketsOnline.pop(); 
-        io.to(lastSocket).emit("salute", message);
-    })
-
-    // on, once, off
-    // socket.emit("on", "holi");
-    // socket.emit("on", "holi");
-
-    socket.emit("once", "holi");
-    socket.emit("once", "holi");
-
-    socket.emit("off", "holi");
-    setTimeout(()=>{
-        socket.emit("off", "holi");
-    }, 3000);
 });
 
 httpServer.listen(3000);
