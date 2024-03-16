@@ -1,31 +1,39 @@
 const socket = io();
 
+const connectRoom1 =document.querySelector("#connectRoom1");
+const connectRoom2 =document.querySelector("#connectRoom2");
+const connectRoom3 =document.querySelector("#connectRoom3");
 
-const circle = document.querySelector("#circle");
-const drawCircle = position =>{
-    circle.style.top = position.top;
-    circle.style.left = position.left;
-}
-const drag = e => {
-    const clientX = e.clientX;
-    const clientY = e.clientY;
-    // circle.style.top = clientY + "px";
-    // circle.style.left = clientX + "px";
-    const position = {
-        top: clientY + "px",
-        left: clientX + "px"
-    };
-    drawCircle(position)
+// Eventos para que al hacer click me conecte a las salas
 
-    socket.emit("circle position", position);
-}
-document.addEventListener("mousedown", e =>{
-    document.addEventListener("mousemove", drag);
+connectRoom1.addEventListener("click", () =>{
+    socket.emit("connect to room", "room1");
 });
 
-document.addEventListener("mouseup", e =>{
-    document.removeEventListener("mousemove", drag);
+connectRoom2.addEventListener("click", () =>{
+    socket.emit("connect to room", "room2");
 });
-socket.on("move circle", position =>{
-    drawCircle(position)
+
+connectRoom3.addEventListener("click", () =>{
+    socket.emit("connect to room", "room3");
+});
+
+//Enviar mensaje
+
+const sendMessage = document.querySelector("#sendMessage")
+
+sendMessage.addEventListener("click", ()=>{
+    const message = prompt("Escribe tu mensaje:");
+    socket.emit("message", message);
+});
+
+//Recibir el evento del mensaje
+
+socket.on("send message", data =>{
+    const { room } = data;
+    const { message } =data;
+    const li = document.createElement("li");
+    li.textContent = message;
+
+    document.querySelector(`#${room}`).append(li);
 })
